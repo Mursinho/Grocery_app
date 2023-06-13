@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'presentation/product_list_screen.dart';
+import 'category_screen.dart';
 
 
 void main() {
@@ -43,8 +44,15 @@ class MainScreen extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.category),
             title: Text('Categories'),
-            onTap: () {
-              // Handle tapping on Categories
+            onTap: () async {
+              String selectedCategory = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CategoryScreen()),
+            );
+            if (selectedCategory != null) {
+              // Do something with the selected category
+              print('Selected Category: $selectedCategory');
+            }  // Handle tapping on Categories
             },
           ),
           ListTile(
@@ -59,6 +67,42 @@ class MainScreen extends StatelessWidget {
             title: Text('Notifications'),
             onTap: () {
               // Handle tapping on Notifications
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.drafts),
+            title: Text('Draft'),
+            onTap: () {
+              // Handle tapping on Draft
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.exit_to_app),
+            title: Text('Exit'),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Confirm Exit'),
+                    content: Text('Are you sure you want to exit the app?'),
+                    actions: [
+                      TextButton(
+                        child: Text('No'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: Text('Yes'),
+                        onPressed: () {
+                          SystemNavigator.pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
             },
           ),
         ],
