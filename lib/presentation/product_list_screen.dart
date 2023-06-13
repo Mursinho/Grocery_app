@@ -154,7 +154,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   @override
-  @override
 Widget build(BuildContext context) {
   return Scaffold(
     appBar: AppBar(
