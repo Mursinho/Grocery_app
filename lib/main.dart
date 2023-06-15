@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'presentation/product_list_screen.dart';
 import 'category_screen.dart';
+import '../core/product.dart';
 
 
 void main() {
   runApp(GroceryApp());
+  storeProducts();
 }
 
 class GroceryApp extends StatelessWidget {

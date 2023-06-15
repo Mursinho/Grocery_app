@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/product.dart';
-import '../domain/get_products_use_case.dart';
-import '../data/fake_product_repository.dart';
 
 class ProductListScreen extends StatefulWidget {
   @override
@@ -11,20 +9,16 @@ class ProductListScreen extends StatefulWidget {
 }
 
 class _ProductListScreenState extends State<ProductListScreen> {
-  late GetProductsUseCase getProductsUseCase;
   List<Product> productList = [];
-
   final TextEditingController _nameController = TextEditingController();
   String _selectedCategory = CategoryList.categories[0];
   final TextEditingController _priceController = TextEditingController();
-
-  bool isLoading = true;
   SharedPreferences? _prefs;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    getProductsUseCase = GetProductsUseCase(FakeProductRepository());
     SharedPreferences.getInstance().then((prefs) {
       setState(() {
         _prefs = prefs;
@@ -33,12 +27,13 @@ class _ProductListScreenState extends State<ProductListScreen> {
     });
   }
 
-  void fetchProducts() async {
-    final products = await getProductsUseCase.execute();
+  Future<void> fetchProducts() async {
     setState(() {
-      productList = products;
-      isLoading = false;
+      isLoading = true;
     });
+
+    // Simulating a loading delay of 1 second
+    await Future.delayed(Duration(seconds: 1));
 
     final String? productListJson = _prefs?.getString('productList');
     if (productListJson != null) {
@@ -60,22 +55,23 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   void addProduct() {
-  final String name = _nameController.text;
-  final double price = double.parse(_priceController.text);
-  final Product newProduct = Product(
-    id: productList.length + 1,
-    name: name,
-    category: _selectedCategory,
-    price: price,
-  );
+    final String name = _nameController.text;
+    final double price = double.parse(_priceController.text);
+    final Product newProduct = Product(
+      id: productList.length + 1,
+      name: name,
+      category: _selectedCategory,
+      price: price,
+    );
 
-  setState(() {
-    productList.add(newProduct);
-  });
+    setState(() {
+      productList.add(newProduct);
+    });
 
-  Navigator.pop(context); // Close the add product dialog
-}
+    Navigator.pop(context); // Close the add product dialog
 
+    _saveProductList(); // Save the updated product list to SharedPreferences
+  }
 
   void _showAddProductDialog() {
     final _nameController = TextEditingController();
@@ -138,10 +134,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   productList.add(newProduct);
                 });
 
-                final List<dynamic> productListData =
-                    productList.map((product) => product.toJson()).toList();
-                final String productListJson = json.encode(productListData);
-                _prefs?.setString('productList', productListJson);
+                _saveProductList(); // Save the updated product list to SharedPreferences
 
                 Navigator.of(context).pop();
               },
@@ -153,41 +146,49 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
   }
 
+  void _saveProductList() {
+    final List<dynamic> productListData =
+        productList.map((product) => product.toJson()).toList();
+    final String productListJson = json.encode(productListData);
+    _prefs?.setString('productList', productListJson);
+  }
+
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text('Products List'),
-    ),
-    body: Stack(
-      children: [
-        if (isLoading) // Show loading circle if isLoading is true
-          Center(
-            child: CircularProgressIndicator(),
-          ),
-        if (!isLoading && productList.isNotEmpty) // Show product list if not loading and productList is not empty
-          ListView.builder(
-            itemCount: productList.length,
-            itemBuilder: (context, index) {
-              final product = productList[index];
-              return ListTile(
-                leading: Icon(Icons.shopping_cart),
-                title: Text(product.name),
-                subtitle: Text('Category: ${product.category}'),
-                trailing: Text('\₪${product.price.toStringAsFixed(2)}'),
-              );
-            },
-          ),
-        if (!isLoading && productList.isEmpty) // Show message if not loading and productList is empty
-          Center(
-            child: Text('No products available.'),
-          ),
-      ],
-    ),
-    floatingActionButton: FloatingActionButton(
-      onPressed: _showAddProductDialog,
-      child: Icon(Icons.add),
-    ),
-  );
-}
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Products List'),
+      ),
+      body: Stack(
+        children: [
+          if (isLoading)
+            Center(
+              child: CircularProgressIndicator(),
+            ),
+          if (!isLoading && productList.isNotEmpty)
+            ListView.builder(
+              padding: EdgeInsets.only(bottom: 80),
+              itemCount: productList.length,
+              itemBuilder: (context, index) {
+                final product = productList[index];
+                return ListTile(
+                  leading: Icon(Icons.shopping_cart),
+                  title: Text(product.name),
+                  subtitle: Text('Category: ${product.category}'),
+                  trailing: Text('\₪${product.price.toStringAsFixed(2)}'),
+                );
+              },
+            ),
+          if (!isLoading && productList.isEmpty)
+            Center(
+              child: Text('No products available.'),
+            ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddProductDialog,
+        child: Icon(Icons.add),
+      ),
+    );
+  }
 }
