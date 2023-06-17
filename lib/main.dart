@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'presentation/product_list_screen.dart';
-import 'category_screen.dart';
+import '../presentation/category_screen.dart';
+import '../presentation/cart_list_screen.dart';
 import '../core/product.dart';
-
 
 void main() {
   runApp(GroceryApp());
-  storeProducts();
 }
 
 class GroceryApp extends StatelessWidget {
@@ -22,6 +21,7 @@ class GroceryApp extends StatelessWidget {
       home: MainScreen(),
       routes: {
         '/productList': (context) => ProductListScreen(),
+        '/cartList': (context) => CartListScreen(cartProducts: cartProducts),
       },
     );
   }
@@ -48,20 +48,20 @@ class MainScreen extends StatelessWidget {
             title: Text('Categories'),
             onTap: () async {
               String selectedCategory = await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CategoryScreen()),
-            );
-            if (selectedCategory != null) {
-              // Do something with the selected category
-              print('Selected Category: $selectedCategory');
-            }  // Handle tapping on Categories
+                context,
+                MaterialPageRoute(builder: (context) => CategoryScreen()),
+              );
+              if (selectedCategory != null) {
+                // Do something with the selected category
+                print('Selected Category: $selectedCategory');
+              }
             },
           ),
           ListTile(
             leading: Icon(Icons.shopping_cart),
             title: Text('Shopping Cart'),
             onTap: () {
-              // Handle tapping on Shopping Cart
+              Navigator.pushNamed(context, '/cartList');
             },
           ),
           ListTile(
@@ -112,8 +112,3 @@ class MainScreen extends StatelessWidget {
     );
   }
 }
-
-
-
-
-

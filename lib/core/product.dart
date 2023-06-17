@@ -32,6 +32,40 @@ class Product {
   }
 }
 
+List<Product> cartProducts = [
+  /*Product(
+      id: 4,
+      name: 'Almonds',
+      price: 4.99,
+      category: 'Nuts',
+    ),
+    Product(
+      id: 5,
+      name: 'Milk',
+      price: 2.49,
+      category: 'Dairy',
+    ),
+    Product(
+      id: 6,
+      name: 'Chicken Breast',
+      price: 5.99,
+      category: 'Meat',
+    ),
+    Product(
+      id: 7,
+      name: 'Bread',
+      price: 1.99,
+      category: 'Bakery',
+    ),
+    Product(
+      id: 8,
+      name: 'Pasta',
+      price: 2.49,
+      category: 'Pantry',
+    ),*/
+
+];
+
 List<Product> productList = [
     Product(
       id: 1,
@@ -201,5 +235,3 @@ Future<void> storeProducts() async {
 
   print('Products stored in shared preferences.');
 }
-
-
